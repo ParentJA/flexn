@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  flexn-database:
+    container_name: flexn-database
+    environment:
+      - POSTGRES_DB=flexn
+      - POSTGRES_USER=flexn
+      - POSTGRES_PASSWORD=flexn
+    image: postgres:14.1-alpine
+    ports:
+      - 5433:5432
+    volumes:
+      - flexn-database:/var/lib/postgresql/data
+
+  flexn-server:
+    build:
+      context: ./server
+    command: [ "bash", "start.sh" ]
+    container_name: flexn-server
+    depends_on:
+      - flexn-database
+    environment:
+      - PGDATABASE=flexn
+      - PGUSER=flexn
+      - PGPASSWORD=flexn
+      - PGHOST=flexn-database
+      - PGPORT=5432
+    ports:
+      - "8000"
+    volumes:
+      - ./server:/usr/src/app
+      - static:/usr/src/app/static
+
+  flexn-client:
+    build:
+      context: ./client
+    command: [ "yarn", "start" ]
+    container_name: flexn-client
+    depends_on:
+      - flexn-server
+    ports:
+      - "3000"
+    volumes:
+      - ./client:/usr/src/app
+
+  flexn-nginx:
+    build:
+      context: ./nginx
+    container_name: flexn-nginx
+    depends_on:
+      - flexn-server
+      - flexn-client
+    ports:
+      - 8080:80
+    restart: always
+    volumes:
+      - static:/usr/src/app/static
+
+volumes:
+  flexn-database:
+  static:
