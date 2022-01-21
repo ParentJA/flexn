@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Formik } from 'formik';
-import {
-  Alert, Breadcrumb, Button, Form
-} from 'react-bootstrap';
+import { Alert, Breadcrumb, Button, Form } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 
-function LogIn ({ isLoggedIn, logIn }) {
+function LogIn({ isLoggedIn, logIn }) {
   const [isSubmitted, setSubmitted] = useState(false);
 
   const onSubmit = async (values, actions) => {
@@ -28,70 +26,57 @@ function LogIn ({ isLoggedIn, logIn }) {
   };
 
   if (isLoggedIn || isSubmitted) {
-    return <Navigate to='/' />;
+    return <Navigate to="/" />;
   }
 
   return (
     <>
       <Breadcrumb>
-        <Breadcrumb.Item href='/#/'>Home</Breadcrumb.Item>
+        <Breadcrumb.Item href="/#/">Home</Breadcrumb.Item>
         <Breadcrumb.Item active>Log in</Breadcrumb.Item>
       </Breadcrumb>
       <h1>Log in</h1>
       <Formik
         initialValues={{
           username: '',
-          password: ''
+          password: '',
         }}
         onSubmit={onSubmit}
       >
-        {({
-          errors,
-          handleChange,
-          handleSubmit,
-          isSubmitting,
-          values
-        }) => (
+        {({ errors, handleChange, handleSubmit, isSubmitting, values }) => (
           <>
-            {
-              '__all__' in errors && (
-                <Alert variant='danger'>
-                  {errors.__all__}
-                </Alert>
-              )
-            }
+            {'__all__' in errors && (
+              <Alert variant="danger">{errors.__all__}</Alert>
+            )}
             <Form noValidate onSubmit={handleSubmit}>
-              <Form.Group className='mb-3' controlId='username'>
+              <Form.Group className="mb-3" controlId="username">
                 <Form.Label>Username:</Form.Label>
                 <Form.Control
-                  name='username'
+                  name="username"
                   onChange={handleChange}
                   value={values.username}
                 />
               </Form.Group>
-              <Form.Group className='mb-3' controlId='password'>
+              <Form.Group className="mb-3" controlId="password">
                 <Form.Label>Password:</Form.Label>
                 <Form.Control
-                  name='password'
+                  name="password"
                   onChange={handleChange}
-                  type='password'
+                  type="password"
                   value={values.password}
                 />
               </Form.Group>
-              <div className='d-grid mb-3'>
-                <Button
-                  disabled={isSubmitting}
-                  type='submit'
-                  variant='primary'
-                >Log in
+              <div className="d-grid mb-3">
+                <Button disabled={isSubmitting} type="submit" variant="primary">
+                  Log in
                 </Button>
               </div>
             </Form>
           </>
         )}
       </Formik>
-      <p className='text-center'>
-        Don't have an account? <Link to='/sign-up'>Sign up!</Link>
+      <p className="text-center">
+        Don't have an account? <Link to="/sign-up">Sign up!</Link>
       </p>
     </>
   );

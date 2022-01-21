@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import {
-  Button, Container, Form, Navbar
-} from 'react-bootstrap';
+import { Button, Container, Form, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -14,7 +12,7 @@ import SignUp from './components/SignUp';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
-function App () {
+function App() {
   const [isLoggedIn, setLoggedIn] = useState(() => {
     return window.localStorage.getItem('flexn.auth') !== null;
   });
@@ -23,14 +21,18 @@ function App () {
     const url = `/api/log_in/`;
     try {
       const response = await axios.post(url, { username, password });
-      window.localStorage.setItem(
-        'flexn.auth', JSON.stringify(response.data)
-      );
+      window.localStorage.setItem('flexn.auth', JSON.stringify(response.data));
       setLoggedIn(true);
-      return { response, isError: false };
+      return {
+        response,
+        isError: false,
+      };
     } catch (error) {
       console.error(error);
-      return { response: error, isError: true };
+      return {
+        response: error,
+        isError: true,
+      };
     }
   };
 
@@ -42,56 +44,41 @@ function App () {
   return (
     <Routes>
       <Route
-        path='/'
-        element={
-          <Layout
-            isLoggedIn={isLoggedIn}
-            logOut={logOut}
-          />
-        }
+        path="/"
+        element={<Layout isLoggedIn={isLoggedIn} logOut={logOut} />}
       >
         <Route index element={<Root isLoggedIn={isLoggedIn} />} />
+        <Route path="sign-up" element={<SignUp isLoggedIn={isLoggedIn} />} />
         <Route
-          path='sign-up'
-          element={
-            <SignUp isLoggedIn={isLoggedIn} />
-          }
-        />
-        <Route
-          path='log-in'
-          element={
-            <LogIn
-              isLoggedIn={isLoggedIn}
-              logIn={logIn}
-            />
-          }
+          path="log-in"
+          element={<LogIn isLoggedIn={isLoggedIn} logIn={logIn} />}
         />
       </Route>
     </Routes>
   );
 }
 
-function Layout ({ isLoggedIn, logOut }) {
+function Layout({ isLoggedIn, logOut }) {
   return (
     <>
-      <Navbar bg='light' expand='lg' variant='light'>
+      <Navbar bg="light" expand="lg" variant="light">
         <Container>
-          <LinkContainer to='/'>
-            <Navbar.Brand className='logo'>Flexn</Navbar.Brand>
+          <LinkContainer to="/">
+            <Navbar.Brand className="logo">Flexn</Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle />
           <Navbar.Collapse>
-            {
-              isLoggedIn && (
-                <Form className='ms-auto'>
-                  <Button type='button' onClick={() => logOut()}>Log out</Button>
-                </Form>
-              )
-            }
+            {isLoggedIn && (
+              <Form className="ms-auto">
+                <Button type="button" onClick={() => logOut()}>
+                  Log out
+                </Button>
+              </Form>
+            )}
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <Container className='pt-3'>
+      <Container className="pt-3">
         <Outlet />
       </Container>
       <ToastContainer />
