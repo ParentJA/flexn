@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+from .models import Exercise, Program, Set, Workout
+
 
 class UserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
@@ -71,6 +73,40 @@ class LogInSerializer(TokenObtainPairSerializer):
 }
 '''
 
+class ProgramSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Program
+        fields = ('id', 'name', 'duration_in_days', 'total_workouts',)
+
+
+class WorkoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Workout
+        fields = ('id', 'program', 'name', 'rank',)
+
+
+class ExerciseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exercise
+        fields = ('id', 'name',)
+
+
+class SetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Set
+        fields = ('id', 'workout', 'exercise', 'min_reps', 'max_reps', 'training_type', 'rank',)
+
+
+class ProgramDetailSerializer(serializers.Serializer):
+    description = serializers.CharField(allow_blank=True)
+    duration_in_days = serializers.IntegerField()
+    exercises = ExerciseSerializer(many=True)
+    name = serializers.CharField()
+    sets = SetSerializer(many=True)
+    total_workouts = serializers.IntegerField()
+    workouts = WorkoutSerializer(many=True)
+
+
 class UserProgramSerializer(serializers.ModelSerializer):
     pass
 
@@ -88,10 +124,10 @@ class FullUserWorkoutSerializer(serializers.ModelSerializer):
 
 
 class ProgressDataSerializer(serializers.Serializer):
-    program = UserProgramSerializer()
-    last_workout = CondensedUserWorkoutSerializer()
-    last_workout_same_type = FullUserWorkoutSerializer()
-    next_workout_id = serializers.IntegerField()
+    last_workout = CondensedUserWorkoutSerializer(allow_null=True)
+    last_workout_same_type = FullUserWorkoutSerializer(allow_null=True)
+    next_workout_id = serializers.IntegerField(allow_null=True)
+    program = UserProgramSerializer(allow_null=True)
 
 
 class ErrorSerializer(serializers.Serializer):

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Formik } from 'formik';
-import { Alert, Breadcrumb, Button, Form } from 'react-bootstrap';
+import { Alert, Button, Form } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
@@ -38,10 +38,6 @@ function LogIn({ logIn }) {
 
   return (
     <>
-      <Breadcrumb>
-        <Breadcrumb.Item href="/#/">Home</Breadcrumb.Item>
-        <Breadcrumb.Item active>Log in</Breadcrumb.Item>
-      </Breadcrumb>
       <h1>Log in</h1>
       <Formik
         initialValues={{
