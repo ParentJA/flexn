@@ -1,17 +1,11 @@
-import React from 'react';
-import axios from 'axios';
-import {
-  // Modal,
-  Table,
-} from 'react-bootstrap';
-import { useRecoilValue } from 'recoil';
+import React, { useState } from 'react';
+import { Button, Modal, Table } from 'react-bootstrap';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { accessTokenState } from '../state/Auth';
-
-import {
-  programListQuery,
-  // userProgressQuery
-} from '../state/Core';
+import ProgramDetail from './ProgramDetail';
+import { accessTokenState, userProgramState, userState } from '../state/Auth';
+import { programListQuery } from '../state/Core';
+import { createUserProgram, retrieveProgram } from '../services/Api';
 
 export default function Program() {
   // const userProgress = useRecoilValue(userProgressQuery);
@@ -24,17 +18,29 @@ export default function Program() {
 }
 
 function ProgramTable() {
+  const [program, setProgram] = useState(null);
+  const [show, setShow] = useState(false);
+  const [userProgram, setUserProgram] = useRecoilState(userProgramState);
   const accessToken = useRecoilValue(accessTokenState);
+  const user = useRecoilValue(userState);
   const programList = useRecoilValue(programListQuery);
 
   const programDetail = async (programId) => {
-    try {
-      const url = `/api/program/${programId}/`;
-      const headers = { Authorization: `Bearer ${accessToken}` };
-      const response = await axios.get(url, { headers });
-      return response.data;
-    } catch (error) {
-      return null;
+    const { data, isError } = await retrieveProgram(accessToken, programId);
+    if (!isError) {
+      setProgram(data);
+      setShow(true);
+    }
+  };
+
+  const selectProgram = async () => {
+    const { data, isError } = await createUserProgram(
+      accessToken,
+      user.id,
+      program.id
+    );
+    if (!isError) {
+      setUserProgram(data);
     }
   };
 
@@ -54,16 +60,37 @@ function ProgramTable() {
     );
 
   return (
-    <Table bordered striped>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Duration (days)</th>
-          <th>Total Workouts</th>
-        </tr>
-      </thead>
-      <tbody>{tableBody}</tbody>
-    </Table>
+    <>
+      <Table bordered striped>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Duration (days)</th>
+            <th>Total Workouts</th>
+          </tr>
+        </thead>
+        <tbody>{tableBody}</tbody>
+      </Table>
+      <Modal
+        fullscreen
+        onClick={() => {
+          setShow(false);
+        }}
+        show={show}
+      >
+        <Modal.Body>
+          <ProgramDetail program={program} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShow(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={() => selectProgram()}>
+            Select
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 }
 
