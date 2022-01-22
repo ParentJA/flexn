@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { Formik } from 'formik';
 import { Alert, Breadcrumb, Button, Form } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
-function LogIn({ isLoggedIn, logIn }) {
+import { userState } from '../state/Auth';
+
+function LogIn({ logIn }) {
   const [isSubmitted, setSubmitted] = useState(false);
+  const user = useRecoilValue(userState);
 
   const onSubmit = async (values, actions) => {
     try {
@@ -15,7 +19,10 @@ function LogIn({ isLoggedIn, logIn }) {
       if (isError) {
         const data = response.response.data;
         for (const value in data) {
-          actions.setFieldError(value, data[value].join(' '));
+          const errorMessage = Array.isArray(data[value])
+            ? data[value].join(' ')
+            : data[value];
+          actions.setFieldError(value, errorMessage);
         }
       } else {
         setSubmitted(true);
@@ -25,7 +32,7 @@ function LogIn({ isLoggedIn, logIn }) {
     }
   };
 
-  if (isLoggedIn || isSubmitted) {
+  if (user || isSubmitted) {
     return <Navigate to="/" />;
   }
 
@@ -47,6 +54,9 @@ function LogIn({ isLoggedIn, logIn }) {
           <>
             {'__all__' in errors && (
               <Alert variant="danger">{errors.__all__}</Alert>
+            )}
+            {'detail' in errors && (
+              <Alert variant="danger">{errors.detail}</Alert>
             )}
             <Form noValidate onSubmit={handleSubmit}>
               <Form.Group className="mb-3" controlId="username">

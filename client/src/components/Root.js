@@ -1,12 +1,17 @@
 import React from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import { useRecoilValue } from 'recoil';
 
-function Root({ isLoggedIn }) {
+import { userState } from '../state/Auth';
+
+function Root() {
+  const user = useRecoilValue(userState);
+
   return (
     <div className="middle-center">
       <h1 className="landing">Flexn</h1>
-      {!isLoggedIn && (
+      {!user && (
         <ButtonGroup>
           <LinkContainer to="/sign-up">
             <Button>Sign up</Button>

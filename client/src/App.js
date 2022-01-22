@@ -1,34 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import axios from 'axios';
 import { Button, Container, Form, Navbar } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-import { Outlet, Route, Routes } from 'react-router-dom';
+import { Outlet, Route, Routes, useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import LogIn from './components/LogIn';
-import Root from './components/Root.js';
+import Root from './components/Root';
 import SignUp from './components/SignUp';
+import { tokenState, userState } from './state/Auth';
 
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
 function App() {
-  const [isLoggedIn, setLoggedIn] = useState(() => {
-    return window.localStorage.getItem('flexn.auth') !== null;
-  });
+  const navigate = useNavigate();
+  const setToken = useSetRecoilState(tokenState);
 
   const logIn = async (username, password) => {
     const url = `/api/log_in/`;
     try {
       const response = await axios.post(url, { username, password });
-      window.localStorage.setItem('flexn.auth', JSON.stringify(response.data));
-      setLoggedIn(true);
+      setToken(response.data);
       return {
         response,
         isError: false,
       };
     } catch (error) {
       console.error(error);
+      setToken(null);
       return {
         response: error,
         isError: true,
@@ -37,28 +38,24 @@ function App() {
   };
 
   const logOut = () => {
-    window.localStorage.removeItem('flexn.auth');
-    setLoggedIn(false);
+    setToken(null);
+    navigate('/');
   };
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Layout isLoggedIn={isLoggedIn} logOut={logOut} />}
-      >
-        <Route index element={<Root isLoggedIn={isLoggedIn} />} />
-        <Route path="sign-up" element={<SignUp isLoggedIn={isLoggedIn} />} />
-        <Route
-          path="log-in"
-          element={<LogIn isLoggedIn={isLoggedIn} logIn={logIn} />}
-        />
+      <Route path="/" element={<Layout logOut={logOut} />}>
+        <Route index element={<Root />} />
+        <Route path="sign-up" element={<SignUp />} />
+        <Route path="log-in" element={<LogIn logIn={logIn} />} />
       </Route>
     </Routes>
   );
 }
 
-function Layout({ isLoggedIn, logOut }) {
+function Layout({ logOut }) {
+  const user = useRecoilValue(userState);
+
   return (
     <>
       <Navbar bg="light" expand="lg" variant="light">
@@ -68,7 +65,7 @@ function Layout({ isLoggedIn, logOut }) {
           </LinkContainer>
           <Navbar.Toggle />
           <Navbar.Collapse>
-            {isLoggedIn && (
+            {user && (
               <Form className="ms-auto">
                 <Button type="button" onClick={() => logOut()}>
                   Log out

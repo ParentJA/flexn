@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
 import { HashRouter } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
 
 import './index.css';
 import App from './App';
@@ -14,9 +15,11 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 
 ReactDOM.render(
   <React.StrictMode>
-    <HashRouter>
-      <App />
-    </HashRouter>
+    <RecoilRoot>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </RecoilRoot>
   </React.StrictMode>,
   document.getElementById('root')
 );

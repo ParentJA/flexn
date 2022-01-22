@@ -3,9 +3,13 @@ import axios from 'axios';
 import { Formik } from 'formik';
 import { Breadcrumb, Button, Form } from 'react-bootstrap';
 import { Link, Navigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
-function SignUp(props) {
+import { userState } from '../state/Auth';
+
+function SignUp() {
   const [isSubmitted, setSubmitted] = useState(false);
+  const user = useRecoilValue(userState);
 
   const onSubmit = async (values, actions) => {
     const url = `/api/sign_up/`;
@@ -27,7 +31,7 @@ function SignUp(props) {
     }
   };
 
-  if (props.isLoggedIn) {
+  if (user) {
     return <Navigate to="/" />;
   }
 
