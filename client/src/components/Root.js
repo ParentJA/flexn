@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil';
 import Program from './Program';
 import { userState } from '../state/Auth';
 
-function Root() {
+export default function Root() {
   const user = useRecoilValue(userState);
 
   const loggedOutContent = (
@@ -23,9 +23,11 @@ function Root() {
     </div>
   );
 
-  const loggedInContent = <Program />;
+  const loggedInContent = (
+    <React.Suspense fallback={<>Loading...</>}>
+      <Program />
+    </React.Suspense>
+  );
 
   return user ? loggedInContent : loggedOutContent;
 }
-
-export default Root;

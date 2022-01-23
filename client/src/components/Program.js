@@ -1,29 +1,32 @@
 import React, { useState } from 'react';
 import { Button, Modal, Table } from 'react-bootstrap';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil';
 
 import ProgramDetail from './ProgramDetail';
-import { accessTokenState, userProgramState, userState } from '../state/Auth';
-import { programListQuery } from '../state/Core';
+import { accessTokenState, userState } from '../state/Auth';
+import { listProgramsQuery, userProgressQuery } from '../state/Core';
 import { createUserProgram, retrieveProgram } from '../services/Api';
 
 export default function Program() {
-  // const userProgress = useRecoilValue(userProgressQuery);
+  const userProgress = useRecoilValue(userProgressQuery);
 
-  return (
-    <React.Suspense fallback={<>Loading...</>}>
+  const content =
+    userProgress === null || userProgress.data.user_program === null ? (
       <ProgramTable />
-    </React.Suspense>
-  );
+    ) : (
+      <h1>It works!</h1>
+    );
+
+  return <React.Suspense fallback={<>Loading...</>}>{content}</React.Suspense>;
 }
 
 function ProgramTable() {
   const [program, setProgram] = useState(null);
   const [show, setShow] = useState(false);
-  const [userProgram, setUserProgram] = useRecoilState(userProgramState);
+  const refreshUserProgress = useRecoilRefresher_UNSTABLE(userProgressQuery);
   const accessToken = useRecoilValue(accessTokenState);
   const user = useRecoilValue(userState);
-  const programList = useRecoilValue(programListQuery);
+  const programs = useRecoilValue(listProgramsQuery);
 
   const programDetail = async (programId) => {
     const { data, isError } = await retrieveProgram(accessToken, programId);
@@ -40,17 +43,17 @@ function ProgramTable() {
       program.id
     );
     if (!isError) {
-      setUserProgram(data);
+      refreshUserProgress(data);
     }
   };
 
   const tableBody =
-    programList.length === 0 ? (
+    programs.length === 0 ? (
       <tr>
         <td colspan="3">No programs.</td>
       </tr>
     ) : (
-      programList.map((program) => (
+      programs.map((program) => (
         <tr key={program.id} onClick={() => programDetail(program.id)}>
           <td>{program.name}</td>
           <td>{program.duration_in_days}</td>
@@ -61,7 +64,7 @@ function ProgramTable() {
 
   return (
     <>
-      <Table bordered striped>
+      <Table bordered>
         <thead>
           <tr>
             <th>Name</th>
@@ -93,13 +96,3 @@ function ProgramTable() {
     </>
   );
 }
-
-// function ProgramModal() {
-//   const programDetail = () => {
-
-//   };
-
-//   return (
-
-//   );
-// }

@@ -144,3 +144,14 @@ export const createUserSet = async (
     return { data: error.response.data, isError: true };
   }
 };
+
+export const getUserProgress = async (accessToken, userId) => {
+  const url = `/api/user/${userId}/progress/`;
+  const headers = { Authorization: `Bearer ${accessToken}` };
+  try {
+    const response = await axios.get(url, { headers });
+    return { data: response.data, isError: false };
+  } catch (error) {
+    return { data: error.response.data, isError: true };
+  }
+};
