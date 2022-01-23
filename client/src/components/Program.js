@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Modal, Table } from 'react-bootstrap';
+import { Button, Container, Modal, Table } from 'react-bootstrap';
 import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil';
 
 import ProgramDetail from './ProgramDetail';
+import UserWorkout from './UserWorkout';
 import { accessTokenState, userState } from '../state/Auth';
 import { listProgramsQuery, userProgressQuery } from '../state/Core';
 import { createUserProgram, retrieveProgram } from '../services/Api';
@@ -14,7 +15,7 @@ export default function Program() {
     userProgress === null || userProgress.data.user_program === null ? (
       <ProgramTable />
     ) : (
-      <h1>It works!</h1>
+      <UserWorkout />
     );
 
   return <React.Suspense fallback={<>Loading...</>}>{content}</React.Suspense>;
@@ -82,7 +83,9 @@ function ProgramTable() {
         show={show}
       >
         <Modal.Body>
-          <ProgramDetail program={program} />
+          <Container>
+            <ProgramDetail program={program} />
+          </Container>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShow(false)}>

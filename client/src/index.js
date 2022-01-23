@@ -1,4 +1,5 @@
-import 'bootswatch/dist/lux/bootstrap.css';
+// import 'bootswatch/dist/lux/bootstrap.css';
+import 'bootstrap/dist/css/bootstrap.css';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
