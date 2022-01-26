@@ -1,15 +1,10 @@
 import React from 'react';
 import { groupBy, keyBy, map } from 'lodash';
 import { Card, ListGroup } from 'react-bootstrap';
-import { useRecoilValue } from 'recoil';
 
 import SetDetail from './SetDetail';
-import { userProgressQuery } from '../state/Core';
 
-export default function Workout() {
-  const userProgress = useRecoilValue(userProgressQuery);
-  const workout = userProgress.data.next_workout;
-
+export default function WorkoutDetail({ workout }) {
   const setsByExerciseId = groupBy(workout.sets, (set) => {
     return set.exercise;
   });

@@ -97,13 +97,18 @@ export const createUserProgram = async (accessToken, userId, programId) => {
   }
 };
 
-export const createUserWorkout = async (accessToken, userId, workoutId) => {
+export const createUserWorkout = async (
+  accessToken,
+  userId,
+  userProgramId,
+  workoutId
+) => {
   const url = `/api/user/${userId}/workout/`;
   const headers = { Authorization: `Bearer ${accessToken}` };
   try {
     const response = await axios.post(
       url,
-      { user: userId, workout: workoutId },
+      { user: userId, user_program: userProgramId, workout: workoutId },
       { headers }
     );
     return { data: response.data, isError: false };

@@ -3,7 +3,7 @@ import { Button, ButtonGroup } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { useRecoilValue } from 'recoil';
 
-import Program from './Program';
+import UserProgress from './UserProgress';
 import { userState } from '../state/Auth';
 
 export default function Root() {
@@ -25,7 +25,7 @@ export default function Root() {
 
   const loggedInContent = (
     <React.Suspense fallback={<>Loading...</>}>
-      <Program />
+      <UserProgress />
     </React.Suspense>
   );
 

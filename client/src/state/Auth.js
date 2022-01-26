@@ -39,18 +39,3 @@ export const userState = selector({
     return null;
   },
 });
-
-export const userProgramState = atom({
-  key: 'userProgramState',
-  default: null,
-});
-
-export const userWorkoutState = atom({
-  key: 'userWorkoutState',
-  default: null,
-});
-
-export const exerciseState = atom({
-  key: 'exerciseState',
-  default: null,
-});

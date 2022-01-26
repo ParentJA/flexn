@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
-import Workout from './Workout';
+import WorkoutDetail from './WorkoutDetail';
 import { userProgressQuery } from '../state/Core';
 
 export default function UserWorkout() {
@@ -12,7 +12,7 @@ export default function UserWorkout() {
     return (
       <>
         <p>User has never started a workout for this program.</p>
-        <Workout />
+        <WorkoutDetail />
       </>
     );
   } else {
@@ -20,7 +20,7 @@ export default function UserWorkout() {
       return (
         <>
           <p>User never completed their last workout.</p>
-          <Workout />
+          <WorkoutDetail />
         </>
       );
     } else {
@@ -29,7 +29,7 @@ export default function UserWorkout() {
           <p>
             User completed their last workout and is ready for a new workout.
           </p>
-          <Workout />
+          <WorkoutDetail />
         </>
       );
     }
