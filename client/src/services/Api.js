@@ -117,6 +117,32 @@ export const createUserWorkout = async (
   }
 };
 
+export const updateUserWorkout = async (
+  accessToken,
+  userId,
+  userWorkoutId,
+  isCompleted,
+  isSkipped,
+  skipReason
+) => {
+  const url = `/api/user/${userId}/workout/${userWorkoutId}/`;
+  const headers = { Authorization: `Bearer ${accessToken}` };
+  try {
+    const response = await axios.patch(
+      url,
+      {
+        is_completed: isCompleted,
+        is_skipped: isSkipped,
+        skip_reason: skipReason,
+      },
+      { headers }
+    );
+    return { data: response.data, isError: false };
+  } catch (error) {
+    return { data: error.response.data, isError: true };
+  }
+};
+
 export const createUserSet = async (
   accessToken,
   userId,
@@ -155,6 +181,55 @@ export const getUserProgress = async (accessToken, userId) => {
   const headers = { Authorization: `Bearer ${accessToken}` };
   try {
     const response = await axios.get(url, { headers });
+    return { data: response.data, isError: false };
+  } catch (error) {
+    return { data: error.response.data, isError: true };
+  }
+};
+
+export const getUserWorkoutProgress = async (
+  accessToken,
+  userId,
+  workoutId
+) => {
+  const url = `/api/user/${userId}/workout/${workoutId}/progress/`;
+  const headers = { Authorization: `Bearer ${accessToken}` };
+  try {
+    const response = await axios.get(url, { headers });
+    return { data: response.data, isError: false };
+  } catch (error) {
+    return { data: error.response.data, isError: true };
+  }
+};
+
+export const postUserWorkoutProgress = async (
+  accessToken,
+  userId,
+  workoutId,
+  userProgramId,
+  userWorkoutId,
+  exerciseId,
+  reps,
+  weight,
+  includeBodyweight,
+  warmUp
+) => {
+  const url = `/api/user/${userId}/workout/${workoutId}/progress/`;
+  const headers = { Authorization: `Bearer ${accessToken}` };
+  try {
+    const response = await axios.post(
+      url,
+      {
+        user_program: userProgramId,
+        user_workout: userWorkoutId,
+        exercise: exerciseId,
+        reps,
+        weight,
+        include_bodyweight: includeBodyweight,
+        warm_up: warmUp,
+      },
+      { headers }
+    );
     return { data: response.data, isError: false };
   } catch (error) {
     return { data: error.response.data, isError: true };

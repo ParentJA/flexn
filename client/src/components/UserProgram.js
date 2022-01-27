@@ -14,7 +14,7 @@ export default function UserProgram() {
 
   return (
     <>
-      <h1>Program: {userProgram.id}</h1>
+      <p className="h2">{userProgram.program}</p>
       {content}
     </>
   );
