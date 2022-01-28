@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Container, Modal, Table } from 'react-bootstrap';
-import { useRecoilValue } from 'recoil';
+import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil';
 
 import ProgramDetail from './ProgramDetail';
 import { createUserProgram, retrieveProgram } from '../services/Api';
 import { accessTokenState, userState } from '../state/Auth';
-import { programsState } from '../state/Core';
+import { programsState, userProgressState } from '../state/Core';
 
 export default function ProgramTable() {
   const [program, setProgram] = useState(null);
@@ -14,6 +14,8 @@ export default function ProgramTable() {
   const accessToken = useRecoilValue(accessTokenState);
   const programs = useRecoilValue(programsState);
   const user = useRecoilValue(userState);
+
+  const refreshUserProgress = useRecoilRefresher_UNSTABLE(userProgressState);
 
   const programDetail = async (programId) => {
     const { data, isError } = await retrieveProgram(accessToken, programId);
@@ -24,7 +26,14 @@ export default function ProgramTable() {
   };
 
   const selectProgram = async () => {
-    await createUserProgram(accessToken, user.id, program.id);
+    const { isError } = await createUserProgram(
+      accessToken,
+      user.id,
+      program.id
+    );
+    if (!isError) {
+      refreshUserProgress();
+    }
   };
 
   const tableBody =

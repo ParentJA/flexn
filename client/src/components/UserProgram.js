@@ -14,7 +14,7 @@ export default function UserProgram() {
 
   return (
     <>
-      <p className="h2">{userProgram.program}</p>
+      <p className="h2">{userProgram.program_name}</p>
       {content}
     </>
   );

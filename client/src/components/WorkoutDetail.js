@@ -1,6 +1,5 @@
 import React from 'react';
 import { groupBy, keyBy, map } from 'lodash';
-import { Card, ListGroup } from 'react-bootstrap';
 
 import SetDetail from './SetDetail';
 
@@ -14,17 +13,17 @@ export default function WorkoutDetail({ workout }) {
   const exerciseIds = map(workout.exercises, 'id');
 
   const content = (
-    <Card>
-      <Card.Header as="h5">{workout.name}</Card.Header>
-      <ListGroup variant="flush">
+    <div className="p-3 rounded shadow">
+      <p className="h4">{workout.name}</p>
+      <ul className="list-unstyled">
         {exerciseIds.map((id) => (
-          <ListGroup.Item key={id}>
+          <li key={id}>
             <strong>{exerciseById[id].name}:</strong>{' '}
             <SetDetail sets={setsByExerciseId[id]} />
-          </ListGroup.Item>
+          </li>
         ))}
-      </ListGroup>
-    </Card>
+      </ul>
+    </div>
   );
 
   return content;

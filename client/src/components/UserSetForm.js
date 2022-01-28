@@ -1,13 +1,22 @@
-import React from 'react';
-import { Formik } from 'formik';
-import { Button, Form } from 'react-bootstrap';
+import React, { useRef, useState } from 'react';
+import { Field, Formik } from 'formik';
+import { Button, Collapse, Form } from 'react-bootstrap';
 import { useRecoilValue } from 'recoil';
 
 import { postUserWorkoutProgress } from '../services/Api';
 import { currentWorkoutState, userProgramState } from '../state/Core';
 import { accessTokenState, userState } from '../state/Auth';
 
-export default function UserSetForm({ nextSet, setUserWorkoutProgress }) {
+export default function UserSetForm({
+  nextExercise,
+  nextSet,
+  setUserWorkoutProgress,
+}) {
+  const includeBodyweightCheckbox = useRef(null);
+  const isSkippedCheckbox = useRef(null);
+  const skipReasonDiv = useRef(null);
+  const [showSkipReason, setShowSkipReason] = useState(false);
+
   const accessToken = useRecoilValue(accessTokenState);
   const currentWorkout = useRecoilValue(currentWorkoutState);
   const user = useRecoilValue(userState);
@@ -24,7 +33,9 @@ export default function UserSetForm({ nextSet, setUserWorkoutProgress }) {
       values.reps,
       values.weight,
       values.includeBodyweight,
-      values.warmUp
+      values.isSkipped,
+      values.skipReason,
+      values.isWarmUp
     );
     if (isError) {
       for (const value in data) {
@@ -32,8 +43,29 @@ export default function UserSetForm({ nextSet, setUserWorkoutProgress }) {
       }
     } else {
       actions.resetForm();
+      // Workaround for Formik not resetting the checkboxes
+      includeBodyweightCheckbox.current.checked = false;
+      isSkippedCheckbox.current.checked = false;
+      setShowSkipReason(false);
       setUserWorkoutProgress(data);
     }
+  };
+
+  const validate = (values) => {
+    const errors = {};
+    if (values.isSkipped) {
+      if (values.skipReason.length < 1) {
+        errors.skipReason = 'You must provide a reason for skipping a set.';
+      }
+    } else {
+      if (!values.includeBodyweight && values.weight === 0) {
+        errors.weight = 'Weight must be greater than 0.';
+      }
+      if (values.reps === 0) {
+        errors.reps = 'Reps must be greater than 0.';
+      }
+    }
+    return errors;
   };
 
   return (
@@ -41,12 +73,14 @@ export default function UserSetForm({ nextSet, setUserWorkoutProgress }) {
       initialValues={{
         reps: 0,
         weight: 0,
+        // includeBodyweight: nextExercise.include_bodyweight,
         includeBodyweight: false,
-        warmUp: false,
+        isWarmUp: false,
         isSkipped: false,
         skipReason: '',
       }}
       onSubmit={onSubmit}
+      validate={validate}
     >
       {({ errors, handleChange, handleSubmit, isSubmitting, values }) => (
         <Form noValidate onSubmit={handleSubmit}>
@@ -56,7 +90,6 @@ export default function UserSetForm({ nextSet, setUserWorkoutProgress }) {
               className={'weight' in errors ? 'is-invalid' : ''}
               name="weight"
               onChange={handleChange}
-              required
               type="number"
               value={values.weight}
             />
@@ -66,21 +99,26 @@ export default function UserSetForm({ nextSet, setUserWorkoutProgress }) {
               </Form.Control.Feedback>
             )}
           </Form.Group>
-          <div className="mb-3">
-            <Form.Check
-              label="Include bodyweight"
-              name="includeBodyweight"
-              type="switch"
-              value={values.includeBodyweight}
-            />
-          </div>
+          <Field name="includeBodyweight">
+            {({ field }) => (
+              <div className="mb-3">
+                <Form.Check
+                  {...field}
+                  id="includeBodyWeight"
+                  label="Include bodyweight"
+                  onClick={() => console.log(field)}
+                  ref={includeBodyweightCheckbox}
+                  type="switch"
+                />
+              </div>
+            )}
+          </Field>
           <Form.Group className="mb-3" controlId="reps">
             <Form.Label>Reps:</Form.Label>
             <Form.Control
               className={'reps' in errors ? 'is-invalid' : ''}
               name="reps"
               onChange={handleChange}
-              required
               type="number"
               value={values.reps}
             />
@@ -92,36 +130,50 @@ export default function UserSetForm({ nextSet, setUserWorkoutProgress }) {
           </Form.Group>
           {/* <div className="mb-3">
               <Form.Check
+                checked={values.warmUp}
                 label="Warm up"
                 name="warmUp"
                 type="switch"
-                value={values.warmUp}
               />
             </div> */}
-          <div className="mb-3">
-            <Form.Check
-              label="Skip"
-              name="isSkipped"
-              type="switch"
-              value={values.isSkipped}
-            />
-          </div>
-          <Form.Group className="mb-3" controlId="skipReason">
-            <Form.Label>Skip reason:</Form.Label>
-            <Form.Control
-              as="textarea"
-              className={'skipReason' in errors ? 'is-invalid' : ''}
-              name="skipReason"
-              onChange={handleChange}
-              placeholder="Why are you skipping this set?"
-              value={values.skipReason}
-            />
-            {'skipReason' in errors && (
-              <Form.Control.Feedback type="invalid">
-                {errors.skipReason}
-              </Form.Control.Feedback>
+          <Field name="isSkipped">
+            {({ field }) => (
+              <div className="mb-3">
+                <Form.Check
+                  {...field}
+                  id="isSkipped"
+                  label="Skip"
+                  onClick={() => {
+                    setShowSkipReason(!field.value);
+                  }}
+                  ref={isSkippedCheckbox}
+                  type="switch"
+                />
+              </div>
             )}
-          </Form.Group>
+          </Field>
+          <Collapse in={showSkipReason}>
+            <Form.Group
+              className="mb-3"
+              controlId="skipReason"
+              ref={skipReasonDiv}
+            >
+              <Form.Label>Skip reason:</Form.Label>
+              <Form.Control
+                as="textarea"
+                className={'skipReason' in errors ? 'is-invalid' : ''}
+                name="skipReason"
+                onChange={handleChange}
+                placeholder="Why are you skipping this set?"
+                value={values.skipReason}
+              />
+              {'skipReason' in errors && (
+                <Form.Control.Feedback type="invalid">
+                  {errors.skipReason}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
+          </Collapse>
           <div className="d-grid">
             <Button disabled={isSubmitting} type="submit" variant="primary">
               Add

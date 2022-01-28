@@ -44,8 +44,12 @@ export const listPrograms = async (accessToken) => {
   }
 };
 
-export const destroyUserProgram = async (accessToken, userId, programId) => {
-  const url = `/api/user/${userId}/program/${programId}/`;
+export const destroyUserProgram = async (
+  accessToken,
+  userId,
+  userProgramId
+) => {
+  const url = `/api/user/${userId}/program/${userProgramId}/`;
   const headers = { Authorization: `Bearer ${accessToken}` };
   try {
     const response = await axios.delete(url, { headers });
@@ -55,8 +59,12 @@ export const destroyUserProgram = async (accessToken, userId, programId) => {
   }
 };
 
-export const retrieveUserProgram = async (accessToken, userId, programId) => {
-  const url = `/api/user/${userId}/program/${programId}/`;
+export const retrieveUserProgram = async (
+  accessToken,
+  userId,
+  userProgramId
+) => {
+  const url = `/api/user/${userId}/program/${userProgramId}/`;
   const headers = { Authorization: `Bearer ${accessToken}` };
   try {
     const response = await axios.get(url, { headers });
@@ -69,10 +77,10 @@ export const retrieveUserProgram = async (accessToken, userId, programId) => {
 export const updateUserProgram = async (
   accessToken,
   userId,
-  programId,
+  userProgramId,
   userProgram
 ) => {
-  const url = `/api/user/${userId}/program/${programId}/`;
+  const url = `/api/user/${userId}/program/${userProgramId}/`;
   const headers = { Authorization: `Bearer ${accessToken}` };
   try {
     const response = await axios.post(url, userProgram, { headers });
@@ -143,39 +151,6 @@ export const updateUserWorkout = async (
   }
 };
 
-export const createUserSet = async (
-  accessToken,
-  userId,
-  userProgramId,
-  userWorkoutId,
-  exerciseId,
-  reps,
-  weight,
-  include_bodyweight,
-  warm_up
-) => {
-  const url = `/api/user/${userId}/set/`;
-  const headers = { Authorization: `Bearer ${accessToken}` };
-  try {
-    const response = await axios.post(
-      url,
-      {
-        user_program: userProgramId,
-        user_workout: userWorkoutId,
-        exercise: exerciseId,
-        reps,
-        weight,
-        include_bodyweight,
-        warm_up,
-      },
-      { headers }
-    );
-    return { data: response.data, isError: false };
-  } catch (error) {
-    return { data: error.response.data, isError: true };
-  }
-};
-
 export const getUserProgress = async (accessToken, userId) => {
   const url = `/api/user/${userId}/progress/`;
   const headers = { Authorization: `Bearer ${accessToken}` };
@@ -190,9 +165,9 @@ export const getUserProgress = async (accessToken, userId) => {
 export const getUserWorkoutProgress = async (
   accessToken,
   userId,
-  workoutId
+  userWorkoutId
 ) => {
-  const url = `/api/user/${userId}/workout/${workoutId}/progress/`;
+  const url = `/api/user/${userId}/workout/${userWorkoutId}/progress/`;
   const headers = { Authorization: `Bearer ${accessToken}` };
   try {
     const response = await axios.get(url, { headers });
@@ -212,7 +187,9 @@ export const postUserWorkoutProgress = async (
   reps,
   weight,
   includeBodyweight,
-  warmUp
+  isSkipped,
+  skipReason,
+  isWarmUp
 ) => {
   const url = `/api/user/${userId}/workout/${workoutId}/progress/`;
   const headers = { Authorization: `Bearer ${accessToken}` };
@@ -226,7 +203,9 @@ export const postUserWorkoutProgress = async (
         reps,
         weight,
         include_bodyweight: includeBodyweight,
-        warm_up: warmUp,
+        is_skipped: isSkipped,
+        skip_reason: skipReason,
+        is_warm_up: isWarmUp,
       },
       { headers }
     );

@@ -62,13 +62,17 @@ export default function ContinueWorkout() {
           {')'}
         </p>
         <UserSetForm
+          nextExercise={nextExercise}
           nextSet={nextSet}
           setUserWorkoutProgress={setUserWorkoutProgress}
         />
       </>
     ) : (
       <>
-        <p className="lead">Congratulations, you completed the workout!</p>
+        <p className="lead">
+          Congratulations, you completed the workout! Click below to mark it
+          completed.
+        </p>
         <div className="d-grid">
           <Button
             onClick={() => markCompleted()}

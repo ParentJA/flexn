@@ -11,7 +11,7 @@ export const userProgressState = selector({
     const user = get(userState);
     const { data, isError } = await getUserProgress(accessToken, user.id);
     if (!isError) {
-      return data.data;
+      return data;
     }
     return null;
   },
