@@ -35,7 +35,9 @@ export default function StartWorkout() {
       <WorkoutDetail workout={nextWorkout} />
       <div className="d-grid">
         {/* TODO: Open modal with skip reason. */}
-        <Button variant="secondary">Skip</Button>
+        <Button className="mb-3" variant="secondary">
+          Skip
+        </Button>
         {/* TODO: Open modal warning about recent workout (less than 24 hours ago).*/}
         <Button onClick={() => startWorkout()} variant="primary">
           Start

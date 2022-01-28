@@ -51,6 +51,7 @@ export default function ContinueWorkout() {
 
   const exerciseById = keyBy(currentWorkout.exercises, 'id');
   const nextSet = userWorkoutProgress?.next_set;
+  const nextSetIndex = userWorkoutProgress?.next_set_index;
   const nextExercise = exerciseById[nextSet?.exercise];
 
   const content =
@@ -64,6 +65,7 @@ export default function ContinueWorkout() {
         <UserSetForm
           nextExercise={nextExercise}
           nextSet={nextSet}
+          nextSetIndex={nextSetIndex}
           setUserWorkoutProgress={setUserWorkoutProgress}
         />
       </>
