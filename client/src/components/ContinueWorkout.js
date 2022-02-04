@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { keyBy } from 'lodash';
 import { useRecoilRefresher_UNSTABLE, useRecoilValue } from 'recoil';
 
+import ExerciseLabel from './ExerciseLabel';
 import UserSetForm from './UserSetForm';
+import WorkoutReview from './WorkoutReview';
 import { getUserWorkoutProgress, updateUserWorkout } from '../services/Api';
 import { currentWorkoutState, userProgressState } from '../state/Core';
 import { accessTokenState, userState } from '../state/Auth';
@@ -50,22 +52,24 @@ export default function ContinueWorkout() {
   };
 
   const exerciseById = keyBy(currentWorkout.exercises, 'id');
+  const currentSet = userWorkoutProgress?.curr_set;
+  const currentSetIndex = userWorkoutProgress?.curr_set_index;
+  const currentExercise = exerciseById[currentSet?.exercise];
   const nextSet = userWorkoutProgress?.next_set;
-  const nextSetIndex = userWorkoutProgress?.next_set_index;
-  const nextExercise = exerciseById[nextSet?.exercise];
+  const nextExercise = nextSet ? exerciseById[nextSet?.exercise] : null;
 
   const content =
-    nextSet != null ? (
+    currentSet != null ? (
       <>
         <p className="lead">
-          {nextExercise.name}: {nextSet.min_reps}-{nextSet.max_reps} reps {'('}
-          {nextSet.training_type}
-          {')'}
+          <ExerciseLabel exercise={currentExercise} set={currentSet} />
         </p>
         <UserSetForm
+          currentExercise={currentExercise}
+          currentSet={currentSet}
+          currentSetIndex={currentSetIndex}
           nextExercise={nextExercise}
           nextSet={nextSet}
-          nextSetIndex={nextSetIndex}
           setUserWorkoutProgress={setUserWorkoutProgress}
         />
       </>
@@ -75,7 +79,8 @@ export default function ContinueWorkout() {
           Congratulations, you completed the workout! Click below to mark it
           completed.
         </p>
-        <div className="d-grid">
+        <WorkoutReview />
+        <div className="d-grid mt-3">
           <Button
             onClick={() => markCompleted()}
             type="button"

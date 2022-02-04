@@ -214,3 +214,14 @@ export const postUserWorkoutProgress = async (
     return { data: error.response.data, isError: true };
   }
 };
+
+export const getUserWorkoutSummary = async (accessToken, userId, workoutId) => {
+  const url = `/api/user/${userId}/workout/${workoutId}/summary/`;
+  const headers = { Authorization: `Bearer ${accessToken}` };
+  try {
+    const response = await axios.get(url, { headers });
+    return { data: response.data, isError: false };
+  } catch (error) {
+    return { data: error.response.data, isError: true };
+  }
+};

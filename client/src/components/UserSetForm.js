@@ -3,6 +3,7 @@ import { Field, Formik } from 'formik';
 import { Alert, Button, Collapse, Form } from 'react-bootstrap';
 import { useRecoilValue } from 'recoil';
 
+import ExerciseLabel from './ExerciseLabel';
 import { postUserWorkoutProgress } from '../services/Api';
 import {
   currentWorkoutState,
@@ -12,9 +13,11 @@ import {
 import { accessTokenState, userState } from '../state/Auth';
 
 export default function UserSetForm({
+  currentExercise,
+  currentSet,
+  currentSetIndex,
   nextExercise,
   nextSet,
-  nextSetIndex,
   setUserWorkoutProgress,
 }) {
   const includeBodyweightCheckbox = useRef(null);
@@ -35,7 +38,7 @@ export default function UserSetForm({
       currentWorkout.workout_id,
       userProgram.id,
       currentWorkout.id,
-      nextSet.exercise,
+      currentSet.exercise,
       values.reps,
       values.weight,
       values.includeBodyweight,
@@ -74,7 +77,7 @@ export default function UserSetForm({
     return errors;
   };
 
-  const lastSetSameType = lastWorkoutSameType?.user_sets[nextSetIndex];
+  const lastSetSameType = lastWorkoutSameType?.user_sets[currentSetIndex];
 
   const content = (() => {
     if (lastSetSameType) {
@@ -82,13 +85,13 @@ export default function UserSetForm({
         return 'You skipped this set last time you did this workout with the following reason:';
       }
       let lastSetText = `${lastSetSameType.weight} pounds`;
-      let nextSetText = `${lastSetSameType.weight + 10} pounds`;
-      if (nextExercise.include_bodyweight) {
+      let currentSetText = `${lastSetSameType.weight + 10} pounds`;
+      if (currentExercise.include_bodyweight) {
         lastSetText =
           lastSetSameType.weight > 0
             ? `your bodyweight plus ${lastSetSameType.weight} pounds`
             : 'your bodyweight';
-        nextSetText = `your bodyweight plus ${
+        currentSetText = `your bodyweight plus ${
           lastSetSameType.weight + 10
         } pounds`;
       }
@@ -98,9 +101,9 @@ export default function UserSetForm({
         ' for ' +
         lastSetSameType.reps +
         ' reps. Try to lift ' +
-        nextSetText +
+        currentSetText +
         ' for ' +
-        nextSet.min_reps +
+        currentSet.min_reps +
         ' reps this time.'
       );
     }
@@ -132,7 +135,7 @@ export default function UserSetForm({
         initialValues={{
           reps: 0,
           weight: 0,
-          // includeBodyweight: nextExercise.include_bodyweight,
+          // includeBodyweight: currentExercise.include_bodyweight,
           includeBodyweight: false,
           isWarmUp: false,
           isSkipped: false,
@@ -237,6 +240,10 @@ export default function UserSetForm({
               <Button disabled={isSubmitting} type="submit" variant="primary">
                 Add
               </Button>
+              <div className="form-text text-center">
+                <strong>Next set:</strong>{' '}
+                <ExerciseLabel exercise={nextExercise} set={nextSet} />
+              </div>
             </div>
           </Form>
         )}
